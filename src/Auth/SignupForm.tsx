@@ -47,6 +47,7 @@ const SignupForm = ({
                             error={errors.password?.message ? true : false}
                             helperText={errors.password?.message}
                             sx={{ width: "100%" }}
+                            type="password"
                         />
                         <TextField
                             label="Confirm Password"
@@ -57,6 +58,7 @@ const SignupForm = ({
                                 errors.confirmPassword?.message ? true : false
                             }
                             sx={{ width: "100%" }}
+                            type="password"
                         />
                         <Box
                             sx={{

@@ -15,7 +15,10 @@ const Login = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
         setError,
-    } = useForm<TLogin>({ resolver: zodResolver(LoginSchema) });
+    } = useForm<TLogin>({
+        resolver: zodResolver(LoginSchema),
+        defaultValues: { email: "test@gmail.com", password: "1234" },
+    });
 
     const navigate = useNavigate();
 
