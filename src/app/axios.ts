@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL:
-        "https://web-l1evntpzhwbd.up-pl-waw1-k8s-1.apps.run-on-seenode.com/api/v1",
+    baseURL: "https://stockwiz-server.onrender.com/api/v1",
 });
 
 instance.defaults.headers.common["Content-Type"] = "application/json";
