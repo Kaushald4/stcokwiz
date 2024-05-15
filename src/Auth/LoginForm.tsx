@@ -11,7 +11,7 @@ const LoginForm = ({
     isSubmitting,
 }: TLoginForm) => {
     return (
-        <Box sx={{ maxWidth: "400px", p: "10px", mx: "auto" }}>
+        <Box sx={{ maxWidth: "400px", p: "10px", mx: "auto", mt: 14 }}>
             <Paper sx={{ p: "20px" }}>
                 <form onSubmit={handleSubmit(handleLogin)}>
                     <Box
