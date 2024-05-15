@@ -51,20 +51,28 @@ const StockValue = ({ selectedWatchlist }: TStockValue) => {
         let urls: string[] = [];
         if (symbol) {
             for (let s of symbol) {
+                let stockSymbol = s;
+                if (s?.includes(".")) {
+                    stockSymbol = s?.split(".")[0];
+                }
                 urls.push(
-                    `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${s}&interval=5min&apikey=${process.env.REACT_APP_STOCK_API}`
+                    `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${stockSymbol}&interval=5min&apikey=${process.env.REACT_APP_STOCK_API}`
                 );
             }
         }
         const fetchStockValues = async () => {
-            const responses = await Promise.all(
-                urls.map((url) => privateAxios.get(url))
-            );
-            return responses.map((res) => res.data); // Assuming you want to return the data from each request
+            try {
+                const responses = await Promise.all(
+                    urls.map((url) => privateAxios.get(url))
+                );
+                return responses.map((res) => res.data);
+            } catch (error) {
+                console.log("error");
+            }
         };
         let data = await fetchStockValues();
         setIsOriginal(true);
-        if (data.find((d) => d["Information"])) {
+        if (data && data.find((d) => d["Information"])) {
             urls = [];
             if (symbol) {
                 for (let s of symbol) {
@@ -81,7 +89,7 @@ const StockValue = ({ selectedWatchlist }: TStockValue) => {
 
             data = await fetchStockValues();
         }
-        setstockData(data);
+        setstockData(data || []);
         return data;
     };
 
@@ -111,24 +119,26 @@ const StockValue = ({ selectedWatchlist }: TStockValue) => {
                 Stock Values
             </Typography>
 
-            {stockData.map((item, index) => (
-                <Box mt={1} key={index}>
-                    <h2>Symbol: {item["Meta Data"]["2. Symbol"]}</h2>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Date/Time</TableCell>
-                                    <TableCell>Open</TableCell>
-                                    <TableCell>High</TableCell>
-                                    <TableCell>Low</TableCell>
-                                    <TableCell>Close</TableCell>
-                                    <TableCell>Volume</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {Object.entries(item["Time Series (5min)"]).map(
-                                    ([dateTime, values]) => (
+            {stockData.length >= 1 &&
+                stockData?.map((item, index) => (
+                    <Box mt={1} key={index}>
+                        <h2>Symbol: {item["Meta Data"]["2. Symbol"]}</h2>
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Date/Time</TableCell>
+                                        <TableCell>Open</TableCell>
+                                        <TableCell>High</TableCell>
+                                        <TableCell>Low</TableCell>
+                                        <TableCell>Close</TableCell>
+                                        <TableCell>Volume</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {Object.entries(
+                                        item["Time Series (5min)"]
+                                    ).map(([dateTime, values]) => (
                                         <TableRow key={dateTime}>
                                             <TableCell>{dateTime}</TableCell>
                                             <TableCell>
@@ -147,13 +157,12 @@ const StockValue = ({ selectedWatchlist }: TStockValue) => {
                                                 {values["5. volume"]}
                                             </TableCell>
                                         </TableRow>
-                                    )
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
-            ))}
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                ))}
         </Box>
     );
 };
